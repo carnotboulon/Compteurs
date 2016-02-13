@@ -1,12 +1,28 @@
-.column-left{ float: left; width: 32%; margin-right:2%;}
-.column-right{ float: right; width: 32%;}
-.column-center{ display: inline-block; width: 32%; margin:auto;}
-
-.containerChart
-{
-	/*width: 350px;*/ 
-	height: 400px; 
-	/*margin: 0 auto; */
-	border:1px solid black;
+.vertical-align {
+    display: flex;
+    align-items: center;
 }
-	
+.grey
+{
+    color: #C8C8C8 ;
+}
+.orange
+{
+    color: #f0ad4e;
+}
+.green
+{
+    color: #5cb85c;
+}
+.bgd-orange
+{
+    margin-bottom: 50px;
+    background-color: #f0ad4e;
+    color: white;
+}
+.bgd-green
+{
+    margin-bottom: 50px;
+    background-color: #5cb85c;
+    color: white;
+}
