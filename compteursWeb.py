@@ -42,15 +42,24 @@ class TodayHandler(tornado.web.RequestHandler):
         db = dm()
         data = {}
         data["time"]= []
+        
         series = db.getTodayData()
         for t in series["time"]:
             s = "\"%s\"" % t
             data["time"].append(s)
         loader = tem.Loader("/home/pi/Compteurs/web")
         
-        data["time"]= str(series["time"])
-        data["gas"]= str(series["gas"])
-        data["elec"]= str(series["elec"])
+        data["todayTime"]= str(series["time"])
+        data["todayGas"]= str(series["gas"])
+        data["todayElec"]= str(series["elec"])
+        
+        weekly = getWeeklyData()
+        data["weeklyGas"]= weekly["gas"]
+        data["weeklyElec"]= weekly["elec"]
+        
+        yearly = getYearlyData()
+        data["yearlyGas"]= yearly["gas"]
+        data["yearlyElec"]= yearly["elec"]
         self.write(loader.load("dayStats.html").generate(data=data))
 
 # Gives data in JSON format.

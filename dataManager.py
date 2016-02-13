@@ -87,15 +87,15 @@ class dataManager():
             previousElec = r[3]
         return todayData
 
-    def getWeekStats(self, year, weekNum):
+    def getWeeklyData(self, year, weekNum):
         data = {}
-        com = "SELECT sum(gas) FROM Statistics WHERE year = %s AND week = %s" % (year, weekNum)
-        data["gas"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
-        com = "SELECT sum(elec) FROM Statistics WHERE year = %s AND week = %s" % (year, weekNum)
-        data["elec"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
+        com = "SELECT gas FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
+        data["gas"] = self.getDataFromDB(com) # First element of the list is a tuple.
+        com = "SELECT elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
+        data["elec"] = self.getDataFromDB(com) # First element of the list is a tuple.
         return data
 
-    def getMonthStats(self, year, month):
+    def getYearlyData(self, year, month):
         data = {}
         com = "SELECT sum(gas) FROM Statistics WHERE year = %s AND month = %s" % (year, month)
         data["gas"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
