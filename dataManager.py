@@ -90,9 +90,9 @@ class dataManager():
     def getWeeklyData(self, year, weekNum):
         data = {}
         com = "SELECT gas FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
-        data["gas"] = self.getDataFromDB(com) # First element of the list is a tuple.
+        data["gas"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
         com = "SELECT elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
-        data["elec"] = self.getDataFromDB(com) # First element of the list is a tuple.
+        data["elec"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
         return data
 
     def getYearlyData(self, year, month):
