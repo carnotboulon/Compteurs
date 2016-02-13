@@ -1,0 +1,12 @@
+.column-left{ float: left; width: 32%; margin-right:2%;}
+.column-right{ float: right; width: 32%;}
+.column-center{ display: inline-block; width: 32%; margin:auto;}
+
+.containerChart
+{
+	/*width: 350px;*/ 
+	height: 400px; 
+	/*margin: 0 auto; */
+	border:1px solid black;
+}
+	

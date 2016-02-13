@@ -1,0 +1,97 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stuyvenberg 48</title>
+  <meta name="description" content="Compteurs Stuyvenberg 48">
+  <meta name="author" content="BandP">
+
+  <!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  
+	<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto; border:1px solid black;"></div>
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script>
+      $(function () {
+          $('#container').highcharts({
+              chart: {
+                  type: 'column'
+              },
+              title: {
+                  text: 'Electricity & Gaz Consumption'
+              },
+              xAxis: {
+                  categories: [
+                      'Day',
+                      'Week',
+                      'Month'
+                  ]
+              },
+              yAxis: [{
+                  min: 0,
+                  title: {
+                      text: 'Electricité'
+                  }
+              }, {
+                  title: {
+                      text: 'Gaz'
+                  },
+                  opposite: true
+              }],
+              legend: {
+                  shadow: false
+              },
+              tooltip: {
+                  shared: true
+              },
+              plotOptions: {
+                  column: {
+                      grouping: false,
+                      shadow: false,
+                      borderWidth: 0
+                  }
+              },
+              series: [{
+                  name: 'Electricity Average Consumption',
+                  color: 'rgba(165,170,217,1)',
+                  data: [{{data["elecDailyAverage"]}} , {{data["elecWeeklyAverage"]}} , {{data["elecMonthlyAverage"]}}],
+                  pointPadding: 0.3,
+                  pointPlacement: -0.2
+              }, {
+                  name: 'Electricity Consumption',
+                  color: 'rgba(126,86,134,.9)',
+                  data: [{{data["elecDaily"]}} , {{data["elecWeekly"]}} , {{data["elecMonthly"]}}],
+                  pointPadding: 0.4,
+                  pointPlacement: -0.2
+              }, {
+                  name: 'Gaz Average Consumption',
+                  color: 'rgba(248,161,63,1)',
+                  data: [{{data["gazDailyAverage"]}} , {{data["gazWeeklyAverage"]}} , {{data["gazMonthlyAverage"]}}],
+                  pointPadding: 0.3,
+                  pointPlacement: 0.2,
+                  yAxis: 1
+              }, {
+                  name: 'Gaz Consumption',
+                  color: 'rgba(186,60,61,.9)',
+                  data: [{{data["gazDaily"]}} , {{data["gazWeekly"]}} , {{data["gazMonthly"]}}],
+                  pointPadding: 0.4,
+                  pointPlacement: 0.2,
+                  yAxis: 1
+              }]
+          });
+      });
+  </script>
+  	
+  
+</body>
+</html>
