@@ -1,12 +1,72 @@
-.column-left{ float: left; width: 32%; margin-right:2%;}
-.column-right{ float: right; width: 32%;}
-.column-center{ display: inline-block; width: 32%; margin:auto;}
+/*
+        Color palette: http://www.colourlovers.com/palette/1473/Ocean_Five
+        blue: 00A0B0
+        brown: 6A4A3C
+        pink: CC333F
+        orange: EB6841
+        yellow: EDC951
+*/
 
-.containerChart
+body
 {
-	/*width: 350px;*/ 
-	height: 400px; 
-	/*margin: 0 auto; */
-	border:1px solid black;
+    background-color: #6A4A3C;
 }
-	
+.rounded
+{
+    border-radius: 5px;
+    background-color: #fff;
+}
+.withPad
+{
+    margin:5px;
+    padding: 5px;
+}
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+.yellow
+{
+    color: #EDC951 ;
+}
+.orange
+{
+    color: #EB6841;
+}
+.green
+{
+    color: #5cb85c;
+}
+.blue
+{
+    color: #00A0B0;
+}
+.pink
+{
+    color: #CC333F;
+}
+.bgd-orange
+{
+    background-color: #EB6841;
+    color: white;
+}
+.bgd-green
+{
+    background-color: #5cb85c;
+    color: white;
+}
+.bgd-blue
+{
+    background-color: #00A0B0;
+    color: white;
+}
+.bgd-pink
+{
+    background-color: #CC333F;
+    color: white;
+}
+.bgd-yellow
+{
+    background-color: #EDC951;
+    color: white;
+}
