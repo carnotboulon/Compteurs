@@ -38,13 +38,21 @@ body
 }
 .bgd-orange
 {
-    margin-bottom: 50px;
     background-color: #EB6841;
     color: white;
 }
 .bgd-green
 {
-    margin-bottom: 50px;
     background-color: #5cb85c;
+    color: white;
+}
+.bgd-blue
+{
+    background-color: #00A0B0;
+    color: white;
+}
+.bgd-pink
+{
+    background-color: #CC333F;
     color: white;
 }
