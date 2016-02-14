@@ -7,6 +7,11 @@ body
     border-radius: 5px;
     background-color: #fff;
 }
+.withPad
+{
+    margin:5px;
+    padding: 5px;
+}
 .vertical-align {
     display: flex;
     align-items: center;
