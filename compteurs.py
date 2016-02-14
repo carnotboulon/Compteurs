@@ -9,7 +9,6 @@ db = dm()                                       #creating db connection.
 arduinoIP = "192.168.1.48"                      # IP adress of Arduino.
 
 os.environ["TZ"] = "Europe/Brussels"            # Set time zone.
-print "Starting Acquisition :"+datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
 def resetCompteurs():
     req = urllib2.Request("http://"+arduinoIP+"/reset")  #Building http request.
@@ -24,8 +23,7 @@ def getCompteursValues():
     compteurs = json.loads(data)                # decode json.
     return compteurs                               
 
-s = sched.scheduler(time.time, time.sleep)
-def collect_data(sc):
+def collect_data():
     data = ""
     attempt = 0
     while data == "" and attempt < 3:
@@ -50,9 +48,14 @@ def collect_data(sc):
         resetCompteurs()
 
 
-    sc.enter(timeout,1, collect_data, (sc,))    # Re-do same action in timeout seconds.
+s = sched.scheduler(time.time, time.sleep)
+def schedule_data_acquisition(sc):
+    collect_data()
+    sc.enter(timeout,1, schedule_data_acquisition, (sc,))    # Re-do same action in timeout seconds.
 
-s.enter(timeout, 1, collect_data, (s,))         
+print "Starting Acquisition :"+datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+collect_data()
+s.enter(timeout, 1, schedule_data_acquisition, (s,))         
 s.run()
 
 

@@ -4,6 +4,7 @@ import tornado.options
 import tornado.template as tem
 from dataManager import dataManager as dm
 import os
+import time, datetime
 
 tornado.options.parse_command_line()
 
@@ -21,7 +22,7 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         db = dm()
         mes = db.getLastMeasures(1)[0]
-        loader = tem.Loader("/home/pi/Compteurs/web")
+        loader = tem.Loader("/home/pi/Github/Compteurs/web")
         data = {}
         data["elecDailyAverage"]= 100.
         data["elecWeeklyAverage"]= 500.
@@ -47,17 +48,21 @@ class TodayHandler(tornado.web.RequestHandler):
         for t in series["time"]:
             s = "\"%s\"" % t
             data["time"].append(s)
-        loader = tem.Loader("/home/pi/Compteurs/web")
+        loader = tem.Loader("/home/pi/Github/Compteurs/web")
+
+        currentIndexes = db.getLastMeasures(1)
+        data["currentGasIndex"] = currentIndexes[0][2]
+        data["currentElecIndex"] = currentIndexes[0][3]
         
         data["todayTime"]= str(series["time"])
         data["todayGas"]= str(series["gas"])
         data["todayElec"]= str(series["elec"])
-        
-        weekly = getWeeklyData()
+        now = int(time.time())
+        weekly = db.getWeeklyData(datetime.datetime.today().year, datetime.datetime.today().strftime("%W"))
         data["weeklyGas"]= weekly["gas"]
         data["weeklyElec"]= weekly["elec"]
         
-        yearly = getYearlyData()
+        yearly = db.getYearlyData(datetime.datetime.today().year)
         data["yearlyGas"]= yearly["gas"]
         data["yearlyElec"]= yearly["elec"]
         self.write(loader.load("dayStats.html").generate(data=data))

@@ -8,9 +8,11 @@ os.environ["TZ"] = "Europe/Brussels"
 class dataManager():
 
     DEBUG = True
-    VERBOSITY = 1 
+    VERBOSITY = 1
+    MONTHS = {"1":"jan","2":"feb","3":"mar","4":"apr","5":"may","6":"jun","7":"jul","8":"aug","9":"sep","10":"oct","11":"nov","12":"dec"}
     
-    def __init__(self, dirPath = "/home/pi/Compteurs", db = "CompteursData.db", table = "Measures"):
+    
+    def __init__(self, dirPath = "/home/pi/Github/Compteurs", db = "CompteursData.db", table = "Measures"):
         self.path = dirPath
         self.db = db
         self.table = table
@@ -89,18 +91,24 @@ class dataManager():
 
     def getWeeklyData(self, year, weekNum):
         data = {}
-        com = "SELECT gas FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
-        data["gas"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
-        com = "SELECT elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
-        data["elec"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
+        com = "SELECT gas,elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
+        rawData = self.getDataFromDB(com)
+        data["gas"] = [d[0] for d in rawData] # First element of the list is a tuple.
+        data["elec"] = [d[1] for d in rawData] # First element of the list is a tuple.
         return data
 
-    def getYearlyData(self, year, month):
+    def getYearlyData(self, year):
         data = {}
-        com = "SELECT sum(gas) FROM Statistics WHERE year = %s AND month = %s" % (year, month)
-        data["gas"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
-        com = "SELECT sum(elec) FROM Statistics WHERE year = %s AND month = %s" % (year, month)
-        data["elec"] = self.getDataFromDB(com)[0][0] # First element of the list is a tuple.
+        com = "SELECT * FROM Statistics WHERE year = %s" % (year)
+        rawData = self.getDataFromDB(com)
+        elecData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
+        gasData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
+        for day in rawData:
+            gasData[dataManager.MONTHS[str(day[4])]] += day[6]
+            elecData[dataManager.MONTHS[str(day[4])]] += day[7]
+             
+        data["gas"] = [gasData["jan"], gasData["feb"], gasData["mar"], gasData["apr"], gasData["may"], gasData["jun"], gasData["jul"], gasData["aug"], gasData["sep"], gasData["oct"], gasData["nov"], gasData["dec"]] # First element of the list is a tuple.
+        data["elec"] = [elecData["jan"], elecData["feb"], elecData["mar"], elecData["apr"], elecData["may"], elecData["jun"], elecData["jul"], elecData["aug"], elecData["sep"], elecData["oct"], elecData["nov"], elecData["dec"]]
         return data
 
     def getLastWeeks(self, numberOfWeeks):
