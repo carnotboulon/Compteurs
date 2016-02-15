@@ -89,7 +89,7 @@ class dataManager():
             previousElec = r[3]
         return todayData
 
-    def getWeeklyData(self, year, weekNum):
+    def getWeeklyData(self):
         data = {}
         com = "SELECT day,gas,elec FROM Statistics ORDER BY Id DESC LIMIT 7"
         rawData = self.getDataFromDB(com)
@@ -98,18 +98,28 @@ class dataManager():
         data["elec"] = [d[2] for d in reversed(rawData)] # First element of the list is a tuple.
         return data
 
-    def getYearlyData(self, year):
+    def getYearlyData(self, currentYear, currentMonth):
         data = {}
-        com = "SELECT * FROM Statistics WHERE year = %s" % (year)
+        com = "SELECT * FROM Statistics WHERE (year = %s AND month > %s) OR (year = %s AND month <= %s)" % (currentYear-1, currentMonth, currentYear, currentMonth)
         rawData = self.getDataFromDB(com)
         elecData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
         gasData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
         for day in rawData:
             gasData[dataManager.MONTHS[str(day[4])]] += day[6]
             elecData[dataManager.MONTHS[str(day[4])]] += day[7]
-             
-        data["gas"] = [gasData["jan"], gasData["feb"], gasData["mar"], gasData["apr"], gasData["may"], gasData["jun"], gasData["jul"], gasData["aug"], gasData["sep"], gasData["oct"], gasData["nov"], gasData["dec"]] # First element of the list is a tuple.
-        data["elec"] = [elecData["jan"], elecData["feb"], elecData["mar"], elecData["apr"], elecData["may"], elecData["jun"], elecData["jul"], elecData["aug"], elecData["sep"], elecData["oct"], elecData["nov"], elecData["dec"]]
+        data["time"] = []
+        data["gas"] = []
+        data["elec"] = []
+        for i in range(1,13):
+            index = currentMonth + i
+            if index > 12:
+                index = index - 12
+            data["time"].append(dataManager.MONTHS[str(index)])
+            data["gas"].append(gasData[dataManager.MONTHS[str(index)]])
+            data["elec"].append(elecData[dataManager.MONTHS[str(index)]])
+        print data["time"]
+        print data["gas"]
+        print data["elec"]
         return data
 
     def getLastWeeks(self, numberOfWeeks):
