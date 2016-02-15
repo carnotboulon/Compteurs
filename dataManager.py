@@ -107,10 +107,8 @@ class dataManager():
         for day in rawData:
             gasData[dataManager.MONTHS[str(day[4])]] += day[6]
             elecData[dataManager.MONTHS[str(day[4])]] += day[7]
-             
-        #data["gas"] = [gasData["jan"], gasData["feb"], gasData["mar"], gasData["apr"], gasData["may"], gasData["jun"], gasData["jul"], gasData["aug"], gasData["sep"], gasData["oct"], gasData["nov"], gasData["dec"]] # First element of the list is a tuple.
-        #data["elec"] = [elecData["jan"], elecData["feb"], elecData["mar"], elecData["apr"], elecData["may"], elecData["jun"], elecData["jul"], elecData["aug"], elecData["sep"], elecData["oct"], elecData["nov"], elecData["dec"]]
-        
+        print gasData
+		print elecData
         data["time"] = []
         data["gas"] = []
         data["elec"] = []
