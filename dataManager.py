@@ -116,6 +116,7 @@ class dataManager():
             index = currentMonth + i
             if index > 12:
                 index = index - 12
+            print index
             data["time"].append(dataManager.MONTHS[str(index)])
             data["gas"].append(gasData[dataManager.MONTHS[str(index)]])
             data["elec"].append(elecData[dataManager.MONTHS[str(index)]])
