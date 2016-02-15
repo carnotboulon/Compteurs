@@ -58,13 +58,14 @@ class TodayHandler(tornado.web.RequestHandler):
         data["todayGas"]= str(series["gas"])
         data["todayElec"]= str(series["elec"])
         now = int(time.time())
-        weekly = db.getWeeklyData(datetime.datetime.today().year, datetime.datetime.today().strftime("%W"))
+        weekly = db.getWeeklyData()					#datetime.datetime.today().year, datetime.datetime.today().strftime("%W")
         data["weeklyTime"]= weekly["time"]
         data["weeklyGas"]= weekly["gas"]
         data["weeklyElec"]= weekly["elec"]
         
-        yearly = db.getYearlyData(datetime.datetime.today().year)
-        data["yearlyGas"]= yearly["gas"]
+        yearly = db.getYearlyData(datetime.datetime.today().year, datetime.datetime.today().month)
+        data["yearlyTime"]= yearly["time"]
+		data["yearlyGas"]= yearly["gas"]
         data["yearlyElec"]= yearly["elec"]
         self.write(loader.load("dayStats.html").generate(data=data))
 
