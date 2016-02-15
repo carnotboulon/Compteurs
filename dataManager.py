@@ -10,7 +10,7 @@ class dataManager():
     DEBUG = True
     VERBOSITY = 1
     MONTHS = {"1":"jan","2":"feb","3":"mar","4":"apr","5":"may","6":"jun","7":"jul","8":"aug","9":"sep","10":"oct","11":"nov","12":"dec"}
-    DAYS  ={"0":"Sun","1":"Mon","2":"Tue","2":"Wed","3":"Thu","4":"Fri","5":"Sat"}
+    DAYS  ={"0":"Sun","1":"Mon","2":"Tue","3":"Wed","4":"Thu","5":"Fri","6":"Sat"}
     
     def __init__(self, dirPath = "/home/pi/Github/Compteurs", db = "CompteursData.db", table = "Measures"):
         self.path = dirPath
