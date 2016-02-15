@@ -117,9 +117,9 @@ class dataManager():
             data["time"].append(dataManager.MONTHS[str(index)])
             data["gas"].append(gasData[dataManager.MONTHS[str(index)]])
             data["elec"].append(elecData[dataManager.MONTHS[str(index)]])
-		print data["time"]
-		print data["gas"]
-		print data["elec"]
+        print data["time"]
+        print data["gas"]
+        print data["elec"]
         return data
 
     def getLastWeeks(self, numberOfWeeks):
