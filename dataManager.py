@@ -107,8 +107,6 @@ class dataManager():
         for day in rawData:
             gasData[dataManager.MONTHS[str(day[4])]] += day[6]
             elecData[dataManager.MONTHS[str(day[4])]] += day[7]
-        print gasData
-        print elecData
         data["time"] = []
         data["gas"] = []
         data["elec"] = []
@@ -116,11 +114,12 @@ class dataManager():
             index = currentMonth + i
             if index > 12:
                 index = index - 12
-            print index
             data["time"].append(dataManager.MONTHS[str(index)])
             data["gas"].append(gasData[dataManager.MONTHS[str(index)]])
             data["elec"].append(elecData[dataManager.MONTHS[str(index)]])
-		
+		print data["time"]
+		print data["gas"]
+		print data["elec"]
         return data
 
     def getLastWeeks(self, numberOfWeeks):
