@@ -91,7 +91,6 @@ class dataManager():
 
     def getWeeklyData(self, year, weekNum):
         data = {}
-        #com = "SELECT gas,elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
         com = "SELECT day,gas,elec FROM Statistics ORDER BY Id DESC LIMIT 7"
 		rawData = self.getDataFromDB(com)
         data["time"] = [dataManager.MONTHS[str(d[0])] for d in rawData] # First element of the list is a tuple.
