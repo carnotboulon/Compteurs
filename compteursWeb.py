@@ -65,7 +65,7 @@ class TodayHandler(tornado.web.RequestHandler):
         
         yearly = db.getYearlyData(datetime.datetime.today().year, datetime.datetime.today().month)
         data["yearlyTime"]= yearly["time"]
-		data["yearlyGas"]= yearly["gas"]
+        data["yearlyGas"]= yearly["gas"]
         data["yearlyElec"]= yearly["elec"]
         self.write(loader.load("dayStats.html").generate(data=data))
 
