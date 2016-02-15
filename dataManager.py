@@ -10,7 +10,7 @@ class dataManager():
     DEBUG = True
     VERBOSITY = 1
     MONTHS = {"1":"jan","2":"feb","3":"mar","4":"apr","5":"may","6":"jun","7":"jul","8":"aug","9":"sep","10":"oct","11":"nov","12":"dec"}
-    
+    DAYS  ={"0":"Sun","1":"Mon","2":"Tue","2":"Wed","3":"Thu","4":"Fri","5":"Sat"}
     
     def __init__(self, dirPath = "/home/pi/Github/Compteurs", db = "CompteursData.db", table = "Measures"):
         self.path = dirPath
@@ -91,11 +91,14 @@ class dataManager():
 
     def getWeeklyData(self, year, weekNum):
         data = {}
-        com = "SELECT gas,elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
-        rawData = self.getDataFromDB(com)
-        data["gas"] = [d[0] for d in rawData] # First element of the list is a tuple.
-        data["elec"] = [d[1] for d in rawData] # First element of the list is a tuple.
-        return data
+        #com = "SELECT gas,elec FROM Statistics WHERE year = %s AND week = %s ORDER BY day" % (year, weekNum)
+        com = "SELECT day,gas,elec FROM Statistics ORDER BY Id DESC LIMIT 7"
+		rawData = self.getDataFromDB(com)
+        data["time"] = [dataManager.MONTHS[str(d[0])] for d in rawData] # First element of the list is a tuple.
+        data["gas"] = [d[1] for d in rawData] # First element of the list is a tuple.
+        data["elec"] = [d[2] for d in rawData] # First element of the list is a tuple.
+        
+		return data
 
     def getYearlyData(self, year):
         data = {}
