@@ -108,7 +108,7 @@ class dataManager():
             gasData[dataManager.MONTHS[str(day[4])]] += day[6]
             elecData[dataManager.MONTHS[str(day[4])]] += day[7]
         print gasData
-		print elecData
+        print elecData
         data["time"] = []
         data["gas"] = []
         data["elec"] = []
