@@ -40,6 +40,7 @@ def collect_data():
         gas = data["gas"]
         elec = data["elec"]
         db.saveMeasure(t, gas, elec)     # Save measures in DB.
+        db.saveLocalTemperatureToDb()
     # if last measure of the day: save daily statistics and reset compteurs. 
     currentMeasureDay = datetime.datetime.fromtimestamp(int(time.time())).day
     nextMeasureDay = datetime.datetime.fromtimestamp(int(time.time())+timeout).day

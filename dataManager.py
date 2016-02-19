@@ -11,6 +11,7 @@ class dataManager():
     VERBOSITY = 1
     MONTHS = {"1":"jan","2":"feb","3":"mar","4":"apr","5":"may","6":"jun","7":"jul","8":"aug","9":"sep","10":"oct","11":"nov","12":"dec"}
     DAYS  ={"0":"Sun","1":"Mon","2":"Tue","3":"Wed","4":"Thu","5":"Fri","6":"Sat"}
+    REF_TEMP = 21.
     
     def __init__(self, dirPath = "/home/pi/Github/Compteurs", db = "CompteursData.db", table = "Measures"):
         self.path = dirPath
@@ -192,5 +193,36 @@ class dataManager():
         json += "]);"
         return json
 
+    def saveLocalTemperatureToDb(self):
+        #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/ebbr.json")
+        f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:IKRAAINE5.json")
+        jsonstring = f.read()
+        parsed_json = json.loads(jsonstring)
+        temp_c = parsed_json["current_observation"]["temp_c"]
+        epoch = parsed_json["current_observation"]["local_epoch"]
+        f.close()
+        date = time.strftime("%Y-%m-%d",time.localtime(float(epoch)))
+        com = "INSERT INTO ExternalTemperatures VALUES(NULL,%s, %s)" % (date, temp_c)
+        self.executeSQLCommand(com)
+        if dataManager.DEBUG and dataManager.VERBOSITY > 0:
+            print "Saved External Temperature >> %s >> %s" % (date, temp_c)
+    
+    def getDayAverageTemp(self, date):
+        com = "SELECT * FROM ExternalTemperatures WHERE date='%s'" % (date)
+        measures = self.getDataFromDB(com)
+        if measures:
+            minTemp = min(measures)
+            maxTemp = max(measures)
+        return (maxTemp+minTemp)/2.
+
+    def getEquivalentTemperature(self, date):
+        beforePrevious = getDayAverageTemp(date-2)
+        previous = getDayAverageTemp(date-1)
+        today = getDayAverageTemp(date)
+        return 0.6*today + 0.3*previous + 0.1*beforePrevious
+
+    def getDegresJour(self,date):
+        temperature = getEquivalentTemperature(date)
+        return dataManager.REF_TEMP - temperature
 
         
