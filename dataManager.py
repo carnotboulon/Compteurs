@@ -1,5 +1,6 @@
 import os, sqlite3, time, datetime
-
+import urllib2
+import json
 # To create a table.
 # db.cur.execute("CREATE TABLE Statistics (Id INTEGER PRIMARY KEY ASC, date INT, day INT, week INT, month INT, year INT, gas INT, elec INT)")
 
