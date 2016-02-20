@@ -196,18 +196,21 @@ class dataManager():
 
     def saveLocalTemperatureToDb(self):
         #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/ebbr.json")
-        f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:IKRAAINE5.json")
-        jsonstring = f.read()
-        parsed_json = json.loads(jsonstring)
-        temp_c = parsed_json["current_observation"]["temp_c"]
-        epoch = parsed_json["current_observation"]["local_epoch"]
-        f.close()
-        date = time.strftime("%Y-%m-%d",time.localtime(float(epoch)))
-        com = "INSERT INTO ExternalTemperatures VALUES(NULL,%s, %s)" % (date, temp_c)
-        self.executeSQLCommand(com)
-        if dataManager.DEBUG and dataManager.VERBOSITY > 0:
-            print "Saved External Temperature >> %s >> %s" % (date, temp_c)
-    
+        try:
+            f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:IKRAAINE5.json")
+            jsonstring = f.read()
+            parsed_json = json.loads(jsonstring)
+            temp_c = parsed_json["current_observation"]["temp_c"]
+            epoch = parsed_json["current_observation"]["local_epoch"]
+            f.close()
+            date = time.strftime("%Y-%m-%d",time.localtime(float(epoch)))
+            com = "INSERT INTO ExternalTemperatures VALUES(NULL,%s, %s)" % (date, temp_c)
+            self.executeSQLCommand(com)
+            if dataManager.DEBUG and dataManager.VERBOSITY > 0:
+                print "Saved External Temperature >> %s >> %s" % (date, temp_c)
+        except:
+            print "External Temperature Save Failed. Skip."
+            
     def getDayAverageTemp(self, date):
         com = "SELECT * FROM ExternalTemperatures WHERE date='%s'" % (date)
         measures = self.getDataFromDB(com)
