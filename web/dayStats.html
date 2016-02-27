@@ -153,7 +153,7 @@
         });
         $('#weeklyGas').highcharts({
             chart: {
-                type: 'column',
+               	//type: 'column',
                 height: 150,
             },
             title: {
@@ -165,14 +165,23 @@
             xAxis: {
                 categories: {% raw data["weeklyTime"] %},         /*{% raw data["time"] %},*/
                 crosshair: true
-            },
+            },//Primary Axis
             yAxis: [{
                 min: 0,
                 title: {
-                    text: ''
-                }
+                    text: 'Rot.'
+                },
+		format: '{value} rot.',
         
-            }],
+            },{//Secondary Axis
+		title:'Degrees Day',
+		opposite: true,
+		format: '{value} °C',
+		title: {
+                    text: '°C'
+                },
+
+	    }],
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
@@ -192,9 +201,16 @@
             },
             series: [{
                 name: 'Gas',
-                data: {{data["weeklyGas"]}},                                      /*[1,2,3,4,5,6,7],*/
+                type: 'column',
+		data: {{data["weeklyGas"]}},                                      /*[1,2,3,4,5,6,7],*/
                 color: "#EB6841",
-            }]
+            },{
+
+		name: 'Degree Day',
+		type: 'spline',
+		data: {{data["weeklyDd"]}},  					/*[1.0,2.0,3.0,4.0,5.0,6.0,7.0],*/
+		yAxis: 1
+	}]
         });
         $('#weeklyElec').highcharts({
             chart: {

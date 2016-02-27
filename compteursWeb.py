@@ -62,6 +62,7 @@ class TodayHandler(tornado.web.RequestHandler):
         data["weeklyTime"]= weekly["time"]
         data["weeklyGas"]= weekly["gas"]
         data["weeklyElec"]= weekly["elec"]
+        data["weeklyDd"]= weekly["dd"]
         
         yearly = db.getYearlyData(datetime.datetime.today().year, datetime.datetime.today().month)
         data["yearlyTime"]= yearly["time"]

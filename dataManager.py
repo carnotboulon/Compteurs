@@ -1,10 +1,16 @@
 import os, sqlite3, time, datetime
 import urllib2
-import json
+import json, math
 # To create a table.
 # db.cur.execute("CREATE TABLE Statistics (Id INTEGER PRIMARY KEY ASC, date INT, day INT, week INT, month INT, year INT, gas INT, elec INT)")
+# db.cur.execute("CREATE TABLE ExternalTemperatures (Id INTEGER PRIMARY KEY ASC, date INT, temp REAL)")
 
 os.environ["TZ"] = "Europe/Brussels" 
+
+def mean(vector):
+    vector = filter(lambda x : not math.isnan(x), vector)
+    return float(sum(vector))/len(vector) if vector else 0
+    
 
 class dataManager():
 
@@ -12,7 +18,7 @@ class dataManager():
     VERBOSITY = 1
     MONTHS = {"1":"jan","2":"feb","3":"mar","4":"apr","5":"may","6":"jun","7":"jul","8":"aug","9":"sep","10":"oct","11":"nov","12":"dec"}
     DAYS  ={"0":"Sun","1":"Mon","2":"Tue","3":"Wed","4":"Thu","5":"Fri","6":"Sat"}
-    REF_TEMP = 21.
+    REF_TEMP = 17.
     
     def __init__(self, dirPath = "/home/pi/Github/Compteurs", db = "CompteursData.db", table = "Measures"):
         self.path = dirPath
@@ -68,7 +74,8 @@ class dataManager():
         week = time.strftime("%W",time.localtime(epoch))
         month = time.strftime("%m",time.localtime(epoch))
         year = time.strftime("%Y",time.localtime(epoch))
-        com = "INSERT INTO Statistics VALUES(NULL,%s, %s, %s, %s, %s, %s, %s)" % (date, day, week, month, year, gas, elec)
+        dd = self.getDegresJour(year+"-"+month+"-"+date)
+        com = "INSERT INTO Statistics VALUES(NULL,%s, %s, %s, %s, %s, %s, %s, NULL)" % (date, day, week, month, year, gas, elec)
         self.executeSQLCommand(com)
         if dataManager.DEBUG and dataManager.VERBOSITY > 0:
             print "Saved Stats >> date: %s - day: %s - week: %s - month: %s - year: %s - gas: %s - elec: %s" % (date, day, week, month, year, gas, elec)
@@ -76,6 +83,8 @@ class dataManager():
     def getStats(self):
         com = "SELECT * FROM Statistics"
         return self.getDataFromDB(com)
+
+    
     
     #Get today series.
     def getTodayData(self, timeFormat = "%H:%M"):
@@ -93,11 +102,12 @@ class dataManager():
 
     def getWeeklyData(self):
         data = {}
-        com = "SELECT day,gas,elec FROM Statistics ORDER BY Id DESC LIMIT 7"
+        com = "SELECT day,gas,elec,degreeDay FROM Statistics ORDER BY Id DESC LIMIT 7"
         rawData = self.getDataFromDB(com)
         data["time"] = [dataManager.DAYS[str(d[0])] for d in reversed(rawData)] # First element of the list is a tuple.
         data["gas"] = [d[1] for d in reversed(rawData)] # First element of the list is a tuple.
         data["elec"] = [d[2] for d in reversed(rawData)] # First element of the list is a tuple.
+        data["dd"] = [d[3] for d in reversed(rawData)] # First element of the list is a tuple.
         return data
 
     def getYearlyData(self, currentYear, currentMonth):
@@ -106,12 +116,18 @@ class dataManager():
         rawData = self.getDataFromDB(com)
         elecData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
         gasData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
+        ddData = {"jan":0,"feb":0,"mar":0,"apr":0,"may":0,"jun":0,"jul":0,"aug":0,"sep":0,"oct":0,"nov":0,"dec":0}
         for day in rawData:
             gasData[dataManager.MONTHS[str(day[4])]] += day[6]
             elecData[dataManager.MONTHS[str(day[4])]] += day[7]
+            if day[8]:
+                ddData[dataManager.MONTHS[str(day[4])]] += day[8]
+            else:
+                ddData[dataManager.MONTHS[str(day[4])]] += 0.
         data["time"] = []
         data["gas"] = []
         data["elec"] = []
+        data["dd"] = []
         for i in range(1,13):
             index = currentMonth + i
             if index > 12:
@@ -119,9 +135,11 @@ class dataManager():
             data["time"].append(dataManager.MONTHS[str(index)])
             data["gas"].append(gasData[dataManager.MONTHS[str(index)]])
             data["elec"].append(elecData[dataManager.MONTHS[str(index)]])
+            data["dd"].append(ddData[dataManager.MONTHS[str(index)]])
         print data["time"]
         print data["gas"]
         print data["elec"]
+        print data["dd"]
         return data
 
     def getLastWeeks(self, numberOfWeeks):
@@ -195,38 +213,40 @@ class dataManager():
         return json
 
     def saveLocalTemperatureToDb(self):
-        #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/ebbr.json")
+        #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/IKRAAINE5.json")
         try:
-            f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:IKRAAINE5.json")
+            f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:ebbr.json")
             jsonstring = f.read()
             parsed_json = json.loads(jsonstring)
             temp_c = parsed_json["current_observation"]["temp_c"]
             epoch = parsed_json["current_observation"]["local_epoch"]
             f.close()
             date = time.strftime("%Y-%m-%d",time.localtime(float(epoch)))
-            com = "INSERT INTO ExternalTemperatures VALUES(NULL,%s, %s)" % (date, temp_c)
+            com = "INSERT INTO ExternalTemperatures VALUES(NULL,'%s', %s)" % (date, temp_c)
             self.executeSQLCommand(com)
             if dataManager.DEBUG and dataManager.VERBOSITY > 0:
                 print "Saved External Temperature >> %s >> %s" % (date, temp_c)
         except:
             print "External Temperature Save Failed. Skip."
-            
-    def getDayAverageTemp(self, date):
-        com = "SELECT * FROM ExternalTemperatures WHERE date='%s'" % (date)
-        measures = self.getDataFromDB(com)
-        if measures:
-            minTemp = min(measures)
-            maxTemp = max(measures)
-        return (maxTemp+minTemp)/2.
 
+    def getExternalTemperatures(self):
+        com = "SELECT * FROM ExternalTemperatures"
+        return self.getDataFromDB(com)
+         
+    def getDayAverageTemp(self, date):
+        com = "SELECT temp FROM ExternalTemperatures WHERE date='%s'" % (date)
+        measures = self.getDataFromDB(com)
+        measuresList = [m[0] for m in measures]
+        return (mean(measuresList),len(measuresList))
+        
     def getEquivalentTemperature(self, date):
-        beforePrevious = getDayAverageTemp(date-2)
-        previous = getDayAverageTemp(date-1)
-        today = getDayAverageTemp(date)
+        beforePrevious = self.getDegresJour(date-2)
+        previous = self.getDegresJour(date-1)
+        today = self.getDayAverageTemp(date)
         return 0.6*today + 0.3*previous + 0.1*beforePrevious
 
     def getDegresJour(self,date):
-        temperature = getEquivalentTemperature(date)
+        temperature, samples = self.getDayAverageTemp(date)
         return dataManager.REF_TEMP - temperature
 
         
