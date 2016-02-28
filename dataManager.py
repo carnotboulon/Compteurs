@@ -75,10 +75,10 @@ class dataManager():
         month = time.strftime("%m",time.localtime(epoch))
         year = time.strftime("%Y",time.localtime(epoch))
         dd = self.getDegresJour(year+"-"+month+"-"+date)
-        com = "INSERT INTO Statistics VALUES(NULL,%s, %s, %s, %s, %s, %s, %s, NULL)" % (date, day, week, month, year, gas, elec)
+        com = "INSERT INTO Statistics VALUES(NULL,%s, %s, %s, %s, %s, %s, %s, %s)" % (date, day, week, month, year, gas, elec, dd)
         self.executeSQLCommand(com)
         if dataManager.DEBUG and dataManager.VERBOSITY > 0:
-            print "Saved Stats >> date: %s - day: %s - week: %s - month: %s - year: %s - gas: %s - elec: %s" % (date, day, week, month, year, gas, elec)
+            print "Saved Stats >> date: %s - day: %s - week: %s - month: %s - year: %s - gas: %s - elec: %s - dd: %s" % (date, day, week, month, year, gas, elec, dd)
 
     def getStats(self):
         com = "SELECT * FROM Statistics"
@@ -213,9 +213,9 @@ class dataManager():
         return json
 
     def saveLocalTemperatureToDb(self):
-        #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/IKRAAINE5.json")
+        #f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/ebbr.json")
         try:
-            f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:ebbr.json")
+            f = urllib2.urlopen("http://api.wunderground.com/api/e93d8e80b8d925a2/geolookup/conditions/q/pws:IKRAAINE5.json")
             jsonstring = f.read()
             parsed_json = json.loads(jsonstring)
             temp_c = parsed_json["current_observation"]["temp_c"]
