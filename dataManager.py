@@ -2,6 +2,7 @@ import os, sqlite3, time, datetime
 import urllib2
 import json, math
 # To create a table.
+# db.cur.execute("CREATE TABLE Measures (Id INTEGER PRIMARY KEY ASC, time INT, gas INT, elec INT)")
 # db.cur.execute("CREATE TABLE Statistics (Id INTEGER PRIMARY KEY ASC, date INT, day INT, week INT, month INT, year INT, gas INT, elec INT)")
 # db.cur.execute("CREATE TABLE ExternalTemperatures (Id INTEGER PRIMARY KEY ASC, date INT, temp REAL)")
 
@@ -84,8 +85,6 @@ class dataManager():
         com = "SELECT * FROM Statistics"
         return self.getDataFromDB(com)
 
-    
-    
     #Get today series.
     def getTodayData(self, timeFormat = "%H:%M"):
         rows = self.getTodayMeasures()
@@ -229,8 +228,11 @@ class dataManager():
         except:
             print "External Temperature Save Failed. Skip."
 
-    def getExternalTemperatures(self):
-        com = "SELECT * FROM ExternalTemperatures"
+    def getExternalTemperatures(self, date=""):
+        if date:
+            com = "SELECT * FROM ExternalTemperatures WHERE date='%s'" % date
+        else:
+            com = "SELECT * FROM ExternalTemperatures"
         return self.getDataFromDB(com)
          
     def getDayAverageTemp(self, date):

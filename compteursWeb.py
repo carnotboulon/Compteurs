@@ -68,6 +68,7 @@ class TodayHandler(tornado.web.RequestHandler):
         data["yearlyTime"]= yearly["time"]
         data["yearlyGas"]= yearly["gas"]
         data["yearlyElec"]= yearly["elec"]
+        data["yearlyDd"]= yearly["dd"]
         self.write(loader.load("dayStats.html").generate(data=data))
 
 # Gives data in JSON format.

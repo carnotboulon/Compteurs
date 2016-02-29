@@ -169,19 +169,17 @@
             yAxis: [{
                 min: 0,
                 title: {
-                    text: 'Rot.'
+                    text: 'Rotations'
                 },
-		format: '{value} rot.',
-        
+                format: '{value} rot.',
             },{//Secondary Axis
-		title:'Degrees Day',
-		opposite: true,
-		format: '{value} °C',
-		title: {
-                    text: '°C'
+            opposite: true,
+            format: '{value} °C',
+            title: {
+                    text: 'Degree Day [°CJ]'
                 },
 
-	    }],
+            }],
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                 pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
@@ -202,15 +200,22 @@
             series: [{
                 name: 'Gas',
                 type: 'column',
-		data: {{data["weeklyGas"]}},                                      /*[1,2,3,4,5,6,7],*/
+                data: {{data["weeklyGas"]}},                                      /*[1,2,3,4,5,6,7],*/
                 color: "#EB6841",
             },{
 
-		name: 'Degree Day',
-		type: 'spline',
-		data: {{data["weeklyDd"]}},  					/*[1.0,2.0,3.0,4.0,5.0,6.0,7.0],*/
-		yAxis: 1
-	}]
+                name: 'Degree Day',
+                type: 'spline',
+                data: {{data["weeklyDd"]}},  					/*[1.0,2.0,3.0,4.0,5.0,6.0,7.0],*/
+                color: "#EDC951",
+                dashStyle: "ShortDot",
+                yAxis: 1,
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 2,
+                    lineColor: "#EDC951"
+                }
+            }]
         });
         $('#weeklyElec').highcharts({
             chart: {
@@ -259,7 +264,7 @@
         });
         $('#yearlyGas').highcharts({
             chart: {
-                type: 'column',
+                //type: 'column',
                 height: 150,
             },
             title: {
@@ -275,9 +280,15 @@
             yAxis: [{
                 min: 0,
                 title: {
-                    text: ''
-                }
-        
+                    text: 'Rotations'
+                },
+                format: '{value} rot.'
+                },{
+                opposite: true,
+                format: '{value} °CJ',
+                title: {
+                    text: 'Degrees Day [°CJ]'
+                },                
             }],
             tooltip: {
                 headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
@@ -298,9 +309,23 @@
             },
             series: [{
                 name: 'Gas',
+                type: 'column',
                 data: {{data["yearlyGas"]}},                                    /*[1,2,3,4,5,6,7,8,9,10,11,12],  */
                 color: "#EB6841",
-            }]
+            },{
+                name: 'Degree Day',
+                type: 'spline',
+                data: {{data["yearlyDd"]}},                                    /*[1,2,3,4,5,6,7,8,9,10,11,12],  */
+                dashStyle: "ShortDot",
+                color: "#EDC951",
+                yAxis: 1,
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 2,
+                    lineColor: "#EDC951"
+                }
+            }
+            ]
         });
         $('#yearlyElec').highcharts({
             chart: {
