@@ -5,7 +5,7 @@ import urllib2
 import json
 from dataManager import dataManager as dm
 
-timeout = 1                                     # Minutes between two measures.
+timeout = 15                                    # Minutes between two measures.
 db = dm()                                       # Creating db connection.
 arduinoIP = "192.168.1.48"                      # IP adress of Arduino.
 
