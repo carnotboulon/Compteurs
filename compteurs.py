@@ -1,22 +1,28 @@
+from regularExec import regularExec
 import sched, time, datetime, os
 import urllib
 import urllib2
 import json
 from dataManager import dataManager as dm
 
-timeout = 15*60                                    #Seconds
-db = dm()                                       #creating db connection.
+timeout = 1                                     # Minutes between two measures.
+db = dm()                                       # Creating db connection.
 arduinoIP = "192.168.1.48"                      # IP adress of Arduino.
 
 os.environ["TZ"] = "Europe/Brussels"            # Set time zone.
 
 def resetCompteurs():
+    """ Reset compteurs to zero. Executed every day at midnight.
+    """
     req = urllib2.Request("http://"+arduinoIP+"/reset")  #Building http request.
     res = urllib2.urlopen(req)
     data = res.read()
     print datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")+" > "+ data
 
 def getCompteursValues():
+    """Connects to the compteurs to get their current values.
+    Returns a dictionary with the compteur name and its value.
+    """
     req = urllib2.Request("http://"+arduinoIP)  #Building http request.
     res = urllib2.urlopen(req)
     data = res.read()                           # Get data from request.
@@ -24,6 +30,9 @@ def getCompteursValues():
     return compteurs                               
 
 def collect_data():
+    """Executed every timeout. Connects to the compteurs, get their values and store them in the DB.
+       Also restes the compteurs at midnight.
+    """
     data = ""
     attempt = 0
     while data == "" and attempt < 3:
@@ -43,20 +52,12 @@ def collect_data():
         db.saveLocalTemperatureToDb()
     # if last measure of the day: save daily statistics and reset compteurs. 
     currentMeasureDay = datetime.datetime.fromtimestamp(int(time.time())).day
-    nextMeasureDay = datetime.datetime.fromtimestamp(int(time.time())+timeout).day
+    nextMeasureDay = datetime.datetime.fromtimestamp(int(time.time())+timeout*60).day
     if nextMeasureDay != currentMeasureDay: 
         db.saveDailyStat(t, gas, elec)
         resetCompteurs()
 
-
-s = sched.scheduler(time.time, time.sleep)
-def schedule_data_acquisition(sc):
-    collect_data()
-    sc.enter(timeout,1, schedule_data_acquisition, (sc,))    # Re-do same action in timeout seconds.
-
 print "Starting Acquisition :"+datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-collect_data()
-s.enter(timeout, 1, schedule_data_acquisition, (s,))         
-s.run()
 
-
+re = regularExec(collect_data, timeout)
+re.run()
