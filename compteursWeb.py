@@ -91,7 +91,7 @@ print os.path.join(os.path.dirname(__file__))
 
 def make_app():
     return tornado.web.Application([
-        (r"/", MainHandler),
+        (r"/", TodayHandler),
         (r"/today", TodayHandler),
         (r"/data", DataHandler),
         (r'/(favicon.ico)', tornado.web.StaticFileHandler, {"path": ""}),

@@ -11,7 +11,9 @@ os.environ["TZ"] = "Europe/Brussels"
 def mean(vector):
     vector = filter(lambda x : not math.isnan(x), vector)
     return float(sum(vector))/len(vector) if vector else 0
-    
+
+bufsize = 0
+log = open("/home/pi/Desktop/compteurs.log","a",bufsize)
 
 class dataManager():
 
@@ -67,7 +69,7 @@ class dataManager():
     def saveMeasure(self,timestamp, gas, elec):
         self.executeSQLCommand("INSERT INTO Measures VALUES(NULL,"+str(timestamp)+","+str(gas)+","+str(elec)+")")
         if dataManager.DEBUG and dataManager.VERBOSITY > 0:
-            print "Saved measure >> "+str(timestamp)+" > "+str(gas)+" > "+str(elec)
+            log.write("Saved measure >> "+str(timestamp)+" > "+str(gas)+" > "+str(elec)+"\n")
 
     def saveDailyStat(self, epoch, gas, elec):
         date = time.strftime("%d",time.localtime(epoch))
@@ -79,7 +81,7 @@ class dataManager():
         com = "INSERT INTO Statistics VALUES(NULL,%s, %s, %s, %s, %s, %s, %s, %s)" % (date, day, week, month, year, gas, elec, dd)
         self.executeSQLCommand(com)
         if dataManager.DEBUG and dataManager.VERBOSITY > 0:
-            print "Saved Stats >> date: %s - day: %s - week: %s - month: %s - year: %s - gas: %s - elec: %s - dd: %s" % (date, day, week, month, year, gas, elec, dd)
+            log.write("Saved Stats >> date: %s - day: %s - week: %s - month: %s - year: %s - gas: %s - elec: %s - dd: %s\n" % (date, day, week, month, year, gas, elec, dd))
 
     def getStats(self):
         com = "SELECT * FROM Statistics"
@@ -224,9 +226,9 @@ class dataManager():
             com = "INSERT INTO ExternalTemperatures VALUES(NULL,'%s', %s)" % (date, temp_c)
             self.executeSQLCommand(com)
             if dataManager.DEBUG and dataManager.VERBOSITY > 0:
-                print "Saved External Temperature >> %s >> %s" % (date, temp_c)
+                log.write("Saved External Temperature >> %s >> %s\n" % (date, temp_c))
         except:
-            print "External Temperature Save Failed. Skip."
+            log.write("External Temperature Save Failed. Skip.")
 
     def getExternalTemperatures(self, date=""):
         if date:

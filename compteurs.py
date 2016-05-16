@@ -11,14 +11,18 @@ arduinoIP = "192.168.1.48"                      # IP adress of Arduino.
 
 os.environ["TZ"] = "Europe/Brussels"            # Set time zone.
 
+bufsize = 0
+log = open("/home/pi/Desktop/compteurs.log", "w", bufsize)
+
 def resetCompteurs():
     """ Reset compteurs to zero. Executed every day at midnight.
     """
     req = urllib2.Request("http://"+arduinoIP+"/reset")  #Building http request.
     res = urllib2.urlopen(req)
     data = res.read()
-    print datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")+" > "+ data
-
+    log.write(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")+" > "+ data+"\n")
+    
+    
 def getCompteursValues():
     """Connects to the compteurs to get their current values.
     Returns a dictionary with the compteur name and its value.
@@ -39,7 +43,7 @@ def collect_data():
         try:
             data = getCompteursValues()                 # Get Compteur values from Arduino.    
         except:
-            print "Attempt "+str(attempt)+" failed. Trying again in 3 seconds."
+            log.write("Attempt "+str(attempt)+" failed. Trying again in 3 seconds.\n")
             time.sleep(3)
             attempt += 1
             data = ""
@@ -57,7 +61,7 @@ def collect_data():
         db.saveDailyStat(t, gas, elec)
         resetCompteurs()
 
-print "Starting Acquisition :"+datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+log.write("Starting Acquisition :"+datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")+"\n")
 
 re = regularExec(collect_data, timeout)
 re.run()

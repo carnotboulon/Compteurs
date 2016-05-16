@@ -1,5 +1,8 @@
 import sched, time, datetime
 
+bufsize = 0
+log = open("/home/pi/Desktop/compteurs.log", "w", bufsize)
+
 class regularExec():
     """Scheduler object that will be executed every hour every given time interval."""
     
@@ -22,7 +25,7 @@ class regularExec():
         """
         nu = datetime.datetime.today()
         self.dt = (self.timeout - nu.minute%self.timeout)*60 - nu.second
-        print "Current Time = %s:%s:%s >> delay = %s" % (nu.hour, nu.minute, nu.second, self.dt)
+        log.write("Current Time = %s:%s:%s >> delay = %s" % (nu.hour, nu.minute, nu.second, self.dt))
 
     
     def userFct(self):
