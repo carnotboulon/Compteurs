@@ -251,6 +251,6 @@ class dataManager():
 
     def getDegresJour(self,date):
         temperature, samples = self.getDayAverageTemp(date)
-        return dataManager.REF_TEMP - temperature
+        return max(dataManager.REF_TEMP - temperature,0)
 
         
